@@ -1,0 +1,84 @@
+App Name: DayBloc
+Last updated: 08 March 2026
+
+Introduction
+We are committed to protecting your privacy and ensuring you have a positive experience with our app. This Privacy Policy explains how we collect, use, and protect your information when you use DayBloc.
+
+1. Information We Collect
+1.1 Personal Information:
+DayBloc does not require you to create an account or provide personal details. We assign a random nickname to identify your local session. No name, email, or personal identity is collected.
+
+1.2 Planning & Schedule Data:
+We collect the time blocks, templates, categories, notes, and scheduling data you create within the app. All data is stored locally on your device by default and is never transmitted to our servers.
+
+1.3 Usage Data:
+We collect anonymized information about your interactions with the app, such as features used and session duration, solely to improve the user experience.
+
+2. How We Use Your Information
+2.1 To Provide and Improve Services:
+We use your information to deliver, maintain, and improve DayBloc, personalize your experience, and develop new features.
+
+2.2 On-Device Processing:
+All analysis of your planning data - such as streak calculations, heatmaps, and daily summaries - is performed entirely on your device. We never send your schedule data to external servers for processing.
+
+2.3 For Research and Analytics:
+We use aggregated, anonymized usage data to understand how our app is used and to improve performance.
+
+3. Sharing Your Information
+3.1 Service Providers:
+We do not share your personal planning data with any third-party service providers. Your data remains private and entirely on your device.
+
+3.2 Legal Compliance:
+We may disclose information only if required by law or in response to valid legal requests by authorities.
+
+3.3 Business Transfers:
+In the event of a merger, acquisition, or sale of assets, your information may be transferred to the acquiring entity with prior notice to you.
+
+4. Your Choices
+4.1 Access and Control:
+You have full control over your data. You can:
+
+View, edit, or delete any time block or template at any time
+
+Clear all app data from Settings
+
+Manage notification preferences from Settings
+
+4.2 Data Retention:
+Local data is stored on your device until you manually delete it. Clearing app data or uninstalling the app permanently removes all stored data. We have no copy of it.
+
+4.3 Opt-Out:
+You can opt out of notifications and anonymized analytics collection from Settings. Core app functionality remains fully unaffected.
+
+5. Security
+We take your privacy seriously:
+
+All data is stored locally on your device - we have no server-side access by default
+
+Offline-first architecture ensures your schedule stays on your device
+
+We never sell your data to third parties
+
+No login means no credentials to compromise
+
+However, no system is fully immune to risk. We recommend using strong device passcodes and biometric authentication where available.
+
+6. Data Storage
+6.1 Local Storage:
+All your DayBloc data - blocks, templates, streaks, settings - is stored only on your device using secure local storage. We have zero access to this data.
+
+6.2 No Cloud Sync:
+DayBloc currently does not offer cloud sync. Your data never leaves your device unless you explicitly export it.
+
+7. Children's Privacy
+DayBloc is not intended for users under 13 years of age. We do not knowingly collect information from children. If you believe a child has used the app and data has been collected, please contact us and we will take appropriate action.
+
+8. Changes to This Privacy Policy
+We may update this Privacy Policy periodically. We will notify you of significant changes through the app and update the "Last updated" date above.
+
+9. Contact Us
+If you have any questions or concerns about this Privacy Policy or your data, please contact us at:
+
+Email: daybloc@gmail.com
+
+Your time, your data, your control. ⏱
