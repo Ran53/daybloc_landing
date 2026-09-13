@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description"
-        content="DayBloc — time-block your day with beautiful, draggable blocks. Plan smarter, focus harder, achieve more.">
+        content="DayBloc - time-block your day with beautiful, draggable blocks. Plan smarter, focus harder, achieve more.">
     <meta name="keywords"
-        content="time blocking, day planner, calendar app, productivity, focus, schedule, time management">
+        content="time blocking app, visual day planner, daily time blocking, time blocking Android, time blocking iPhone, offline planner, visual schedule planner, time management app, productivity app, focus app, day planner app, calendar app, task manager app">
     <meta name="theme-color" content="#0A0A0F">
     <meta property="og:title" content="DayBloc — Own Your Day, Block by Block">
     <meta property="og:description"
@@ -21,6 +21,19 @@
     <link rel="shortcut icon" href="favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
     <link rel="manifest" href="site.webmanifest" />
+
+    <script>
+        // Render the Pro purchase-help page when Flutter opens:
+        // https://daybloc.app/?pro=1
+        (function () {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('pro') === '1') {
+                    document.documentElement.classList.add('promo-mode');
+                }
+            } catch (_) {}
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -1321,6 +1334,247 @@
             mix-blend-mode: screen;
         }
 
+
+        /* ===== PRO PURCHASE ISSUE PAGE ===== */
+        html.promo-mode,
+        html.promo-mode body {
+            background: var(--bg);
+        }
+
+        html.promo-mode body > *:not(#pro-issue-page) {
+            display: none !important;
+        }
+
+        #pro-issue-page {
+            display: none;
+            min-height: 100vh;
+            padding: 2rem;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(ellipse 70% 60% at 50% 0%, rgba(124, 110, 250, 0.18) 0%, transparent 70%),
+                var(--bg);
+        }
+
+        html.promo-mode #pro-issue-page {
+            display: flex;
+        }
+
+        .pro-issue-glow {
+            position: absolute;
+            width: 520px;
+            height: 520px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(124, 110, 250, 0.12) 0%, transparent 68%);
+            top: -220px;
+            right: -160px;
+            pointer-events: none;
+        }
+
+        .pro-issue-card {
+            width: min(100%, 620px);
+            padding: clamp(2rem, 6vw, 4rem);
+            background: rgba(19, 19, 28, 0.88);
+            border: 1px solid rgba(124, 110, 250, 0.35);
+            border-radius: 28px;
+            box-shadow:
+                0 30px 90px rgba(0, 0, 0, 0.55),
+                0 0 60px rgba(124, 110, 250, 0.08);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            animation: promo-card-in 0.6s ease both;
+        }
+
+        @keyframes promo-card-in {
+            from {
+                opacity: 0;
+                transform: translateY(18px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .pro-issue-logo {
+            display: inline-flex;
+            align-items: flex-end;
+            gap: 3px;
+            margin-bottom: 1.5rem;
+        }
+
+        .pro-issue-logo span {
+            width: 8px;
+            border-radius: 3px;
+        }
+
+        .pro-issue-logo span:nth-child(1) {
+            height: 18px;
+            background: var(--block-red);
+        }
+
+        .pro-issue-logo span:nth-child(2) {
+            height: 26px;
+            background: var(--accent);
+        }
+
+        .pro-issue-logo span:nth-child(3) {
+            height: 14px;
+            background: var(--block-green);
+        }
+
+        .pro-issue-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(124, 110, 250, 0.1);
+            border: 1px solid rgba(124, 110, 250, 0.25);
+            color: var(--accent-2);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+            margin-bottom: 1.25rem;
+        }
+
+        .pro-issue-eyebrow-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--block-yellow);
+            box-shadow: 0 0 12px rgba(251, 191, 36, 0.5);
+        }
+
+        .pro-issue-card h1 {
+            font-size: clamp(2rem, 6vw, 3.4rem);
+            line-height: 1.08;
+            letter-spacing: -1.8px;
+            font-weight: 900;
+            margin-bottom: 1.25rem;
+        }
+
+        .pro-issue-card .lead {
+            color: var(--muted-2);
+            font-size: 1.05rem;
+            line-height: 1.75;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .pro-issue-card .gift {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(124, 110, 250, 0.12), rgba(167, 139, 250, 0.06));
+            border: 1px solid rgba(124, 110, 250, 0.28);
+        }
+
+        .pro-issue-card .gift-title {
+            color: var(--white);
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: 0.9rem;
+        }
+
+        .promo-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px dashed rgba(167, 139, 250, 0.55);
+            color: var(--white);
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        .copy-code {
+            border: 0;
+            border-radius: 9px;
+            padding: 0.5rem 0.7rem;
+            background: rgba(255, 255, 255, 0.09);
+            color: var(--muted-2);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .copy-code:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: var(--white);
+        }
+
+        .pro-issue-steps {
+            text-align: left;
+            margin: 1.75rem auto 0;
+            max-width: 470px;
+            color: var(--muted);
+            font-size: 0.92rem;
+            line-height: 1.7;
+        }
+
+        .pro-issue-steps strong {
+            color: var(--muted-2);
+        }
+
+        .pro-issue-steps ol {
+            margin: 0.75rem 0 0;
+            padding-left: 1.25rem;
+        }
+
+        .pro-issue-steps li {
+            margin-bottom: 0.45rem;
+        }
+
+        .pro-issue-note {
+            color: var(--muted);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin-top: 1.5rem;
+        }
+
+        .pro-issue-note strong {
+            color: var(--muted-2);
+        }
+
+        .pro-issue-back {
+            display: inline-block;
+            margin-top: 1.75rem;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 700;
+            transition: color 0.2s ease;
+        }
+
+        .pro-issue-back:hover {
+            color: var(--white);
+        }
+
+        @media(max-width:600px) {
+            #pro-issue-page {
+                padding: 1rem;
+            }
+
+            .pro-issue-card {
+                border-radius: 22px;
+                padding: 2rem 1.25rem;
+            }
+
+            .promo-code {
+                font-size: 1.05rem;
+            }
+        }
+
         /* ===== RESPONSIVE ===== */
         @media(max-width:900px) {
             .hero h1 {
@@ -1394,6 +1648,66 @@
 
 <body>
     <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- PRO PURCHASE ISSUE PAGE
+         Flutter can open this page with:
+         https://daybloc.app/?pro=1
+    -->
+    <main id="pro-issue-page" aria-labelledby="proIssueTitle">
+        <div class="pro-issue-glow"></div>
+
+        <section class="pro-issue-card">
+            <!-- <div class="pro-issue-logo" aria-label="DayBloc">
+                <span></span><span></span><span></span>
+            </div> -->
+
+            <div class="pro-issue-eyebrow">
+                <span class="pro-issue-eyebrow-dot"></span>
+                Google Play purchase issue
+            </div>
+
+            <h1 id="proIssueTitle">
+                We hit a small bump with <span class="gradient-text">Google Play.</span>
+            </h1>
+
+            <p class="lead">
+                Google Play is currently preventing some Pro purchases from going through.
+                We've found the issue and we're working to get it resolved.
+            </p>
+
+            <div class="gift">
+                <div class="gift-title">Rather than make you wait, here's 15 days of Monthly Pro on us. ❤️</div>
+
+                <div class="promo-code">
+                    <span id="promoCode">DAYBLOC15</span>
+                    <button class="copy-code" id="copyPromoCode" type="button">Copy</button>
+                </div>
+            </div>
+
+            <div class="pro-issue-steps">
+                <strong>How to redeem your 15 days of Monthly Pro:</strong>
+                <ol>
+                    <li>Copy the code above.</li>
+                    <li>Open DayBloc and go to <strong>Settings → Unlock PRO</strong>.</li>
+                    <li>Select the <strong>Monthly</strong> plan.</li>
+                    <li>Tap your <strong>current payment method</strong>.</li>
+                    <li>Scroll down and select <strong>Redeem code</strong>.</li>
+                    <li>Enter the code above and follow the Google Play prompts.</li>
+                </ol>
+            </div>
+
+            <p class="pro-issue-note">
+                <strong>This offer is valid for the Monthly PRO plan only.</strong><br>
+                <strong>No payment is required for the 15-day trial.</strong><br>
+                After the trial, the subscription follows the terms shown by Google Play
+                when you redeem it. You can cancel anytime through Google Play.
+                The 15-day offer is provided while we work through the Google Play issue.
+            </p>
+
+            <a class="pro-issue-back" href="/">← Back to DayBloc</a>
+        </section>
+    </main>
+
 
     <!-- HEADER -->
     <header id="header">
@@ -1678,6 +1992,30 @@
     </footer>
 
     <script>
+
+        // ===== PRO PURCHASE ISSUE PAGE =====
+        const promoParams = new URLSearchParams(window.location.search);
+
+        if (promoParams.get('pro') === '1') {
+            const copyButton = document.getElementById('copyPromoCode');
+            const promoCode = document.getElementById('promoCode');
+
+            if (copyButton && promoCode) {
+                copyButton.addEventListener('click', async () => {
+                    try {
+                        await navigator.clipboard.writeText(promoCode.textContent.trim());
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyButton.textContent = 'Copy';
+                        }, 1800);
+                    } catch (_) {
+                        // Clipboard permissions can be unavailable in some browsers.
+                        copyButton.textContent = 'Select code';
+                    }
+                });
+            }
+        }
+
         // ===== CURSOR GLOW =====
         const glow = document.getElementById('cursorGlow');
         document.addEventListener('mousemove', e => {
