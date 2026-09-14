@@ -2465,20 +2465,23 @@
             window.addEventListener('pointercancel', endDrag);
             canvas.addEventListener('pointerleave', () => { if (!dragging) targetRotX = 0; });
 
-            // Plain touch-event fallback for older mobile WebViews that
-            // don't fully implement Pointer Events on canvas elements.
-            canvas.addEventListener('touchstart', (e) => {
-                if (!e.touches || !e.touches.length) return;
-                e.preventDefault();
-                beginDrag(e.touches[0].clientX);
-            }, { passive: false });
-            canvas.addEventListener('touchmove', (e) => {
-                if (!e.touches || !e.touches.length) return;
-                e.preventDefault();
-                moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-            }, { passive: false });
-            canvas.addEventListener('touchend', endDrag, { passive: true });
-            canvas.addEventListener('touchcancel', endDrag, { passive: true });
+            // Plain touch-event fallback for the rare mobile browser that
+            // doesn't implement Pointer Events at all. Guarded so it never
+            // double-fires alongside the pointer listeners above.
+            if (!window.PointerEvent) {
+                canvas.addEventListener('touchstart', (e) => {
+                    if (!e.touches || !e.touches.length) return;
+                    e.preventDefault();
+                    beginDrag(e.touches[0].clientX);
+                }, { passive: false });
+                canvas.addEventListener('touchmove', (e) => {
+                    if (!e.touches || !e.touches.length) return;
+                    e.preventDefault();
+                    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+                }, { passive: false });
+                canvas.addEventListener('touchend', endDrag, { passive: true });
+                canvas.addEventListener('touchcancel', endDrag, { passive: true });
+            }
 
             let t = 0;
             function animate() {
