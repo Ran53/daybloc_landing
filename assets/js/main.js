@@ -599,7 +599,6 @@ function initHero3D() {
         else start();
     });
 }
-
 // ===== LAZY LOAD THREE.JS =====
 (function () {
     const heroStage = document.querySelector('.hero-3d-stage');
@@ -613,22 +612,38 @@ function initHero3D() {
 
         const s = document.createElement('script');
         s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-        s.onload = () => initHero3D();
+        s.onload = () => {
+            // Small delay helps some mobile browsers finish layout
+            setTimeout(() => {
+                if (typeof THREE !== 'undefined') {
+                    initHero3D();
+                }
+            }, 50);
+        };
+        s.onerror = () => console.warn('Three.js failed to load');
         document.body.appendChild(s);
     }
 
-    // Load when hero is near the viewport
+    // 1. Load when hero comes near the viewport
     const io = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting) {
             loadThree();
             io.disconnect();
         }
-    }, { rootMargin: '300px' });
+    }, { rootMargin: '200px 0px', threshold: 0.01 });
 
     io.observe(heroStage);
 
-    // Also load on first interaction with the stage (extra safety)
+    // 2. Fallback: also try after a short delay on mobile (in case IO is flaky)
+    if (window.matchMedia('(max-width: 768px)').matches) {
+        setTimeout(() => {
+            if (!loaded) loadThree();
+        }, 1200);
+    }
+
+    // 3. Still allow first interaction to trigger it
     heroStage.addEventListener('pointerdown', loadThree, { once: true });
+    heroStage.addEventListener('touchstart', loadThree, { once: true, passive: true });
 })();
 
         console.log('%cDayBloc 🟣🟡🔴', 'font-size:40px;font-weight:900;background:linear-gradient(135deg,#6C5CE7,#9C8CFF);-webkit-background-clip:text;color:transparent;');
