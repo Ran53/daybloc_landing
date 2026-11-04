@@ -61,13 +61,15 @@
         }, { threshold: 0.15, rootMargin: '0px 0px -80px 0px' });
         document.querySelectorAll('.reveal-section').forEach(el => revealObs.observe(el));
 
-        // ===== AMBIENT PARTICLE FIELD =====
+       // ===== AMBIENT PARTICLE FIELD =====
         (function () {
             const canvas = document.getElementById('bgFX');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             let w, h, particles;
+            let rafId = null;
+            let running = false;
 
             function resize() {
                 w = canvas.width = window.innerWidth;
@@ -85,6 +87,7 @@
             }));
 
             function draw() {
+                if (!running) return;
                 ctx.clearRect(0, 0, w, h);
                 particles.forEach(p => {
                     p.x += p.vx;
@@ -112,11 +115,30 @@
                         }
                     }
                 }
-                if (!reduceMotion) requestAnimationFrame(draw);
+                rafId = requestAnimationFrame(draw);
             }
-            draw();
-        })();
 
+            function start() {
+                if (reduceMotion || running) return;
+                running = true;
+                draw();
+            }
+
+            function stop() {
+                running = false;
+                if (rafId) {
+                    cancelAnimationFrame(rafId);
+                    rafId = null;
+                }
+            }
+
+            // Start only when tab is visible
+            if (!document.hidden) start();
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) stop();
+                else start();
+            });
+        })();
         // ===== PHONE TIMELINE DEMO =====
         const demoBlocks = [
             { time: '7 AM', title: 'Morning Workout', dur: '1h', color: 'var(--coral)', height: 44 },
@@ -417,148 +439,197 @@
                 });
             });
         })();
+// ===== HERO: INTERACTIVE 3D BLOCK CLUSTER (lazy) =====
+function initHero3D() {
+    const canvas = document.getElementById('heroCanvas');
+    if (!canvas || typeof THREE === 'undefined') return;
 
-        // ===== HERO: INTERACTIVE 3D BLOCK CLUSTER =====
-        (function () {
-            const canvas = document.getElementById('heroCanvas');
-            if (!canvas || typeof THREE === 'undefined') return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
+    camera.position.set(0, 0.9, 8.5);
+    camera.lookAt(0, 0, 0);
 
-            const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-            camera.position.set(0, 0.9, 8.5);
-            camera.lookAt(0, 0, 0);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
-            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const group = new THREE.Group();
+    scene.add(group);
 
-            const group = new THREE.Group();
-            scene.add(group);
+    const blockDefs = [
+        { h: 1.15, color: 0xFF6B5E },
+        { h: 1.85, color: 0x6C5CE7 },
+        { h: 0.75, color: 0x4FB8F0 },
+        { h: 1.35, color: 0x2FD98A },
+        { h: 0.95, color: 0xF5B942 },
+        { h: 1.55, color: 0xF0629A },
+        { h: 1.05, color: 0x9C8CFF },
+    ];
 
-            const blockDefs = [
-                { h: 1.15, color: 0xFF6B5E },
-                { h: 1.85, color: 0x6C5CE7 },
-                { h: 0.75, color: 0x4FB8F0 },
-                { h: 1.35, color: 0x2FD98A },
-                { h: 0.95, color: 0xF5B942 },
-                { h: 1.55, color: 0xF0629A },
-                { h: 1.05, color: 0x9C8CFF },
-            ];
+    const meshes = [];
+    blockDefs.forEach((def, i) => {
+        const geo = new THREE.BoxGeometry(1.05, def.h, 1.05);
+        const mat = new THREE.MeshStandardMaterial({ color: def.color, roughness: 0.4, metalness: 0.08 });
+        const mesh = new THREE.Mesh(geo, mat);
+        const angle = (i / blockDefs.length) * Math.PI * 2;
+        const radius = 2.1;
+        mesh.position.x = Math.cos(angle) * radius;
+        mesh.position.z = Math.sin(angle) * radius;
+        const baseY = def.h / 2 - 1.3 + (i % 2) * 0.2;
+        mesh.position.y = baseY;
+        mesh.userData.baseY = baseY;
+        mesh.userData.floatOffset = i * 0.9;
+        group.add(mesh);
+        meshes.push(mesh);
+    });
 
-            const meshes = [];
-            blockDefs.forEach((def, i) => {
-                const geo = new THREE.BoxGeometry(1.05, def.h, 1.05);
-                const mat = new THREE.MeshStandardMaterial({ color: def.color, roughness: 0.4, metalness: 0.08 });
-                const mesh = new THREE.Mesh(geo, mat);
-                const angle = (i / blockDefs.length) * Math.PI * 2;
-                const radius = 2.1;
-                mesh.position.x = Math.cos(angle) * radius;
-                mesh.position.z = Math.sin(angle) * radius;
-                const baseY = def.h / 2 - 1.3 + (i % 2) * 0.2;
-                mesh.position.y = baseY;
-                mesh.userData.baseY = baseY;
-                mesh.userData.floatOffset = i * 0.9;
-                group.add(mesh);
-                meshes.push(mesh);
-            });
+    scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const key = new THREE.DirectionalLight(0xffffff, 0.85);
+    key.position.set(4, 6, 5);
+    scene.add(key);
+    const rim = new THREE.PointLight(0x9c8cff, 1.6, 24);
+    rim.position.set(-5, 2, -3);
+    scene.add(rim);
+    const fillLight = new THREE.PointLight(0xff6b5e, 0.5, 20);
+    fillLight.position.set(4, -2, 3);
+    scene.add(fillLight);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-            const key = new THREE.DirectionalLight(0xffffff, 0.85);
-            key.position.set(4, 6, 5);
-            scene.add(key);
-            const rim = new THREE.PointLight(0x9c8cff, 1.6, 24);
-            rim.position.set(-5, 2, -3);
-            scene.add(rim);
-            const fillLight = new THREE.PointLight(0xff6b5e, 0.5, 20);
-            fillLight.position.set(4, -2, 3);
-            scene.add(fillLight);
+    function resize() {
+        const parent = canvas.parentElement;
+        const w = parent.clientWidth || 1;
+        const h = parent.clientHeight || 1;
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+    resize();
 
-            function resize() {
-                const parent = canvas.parentElement;
-                const w = parent.clientWidth || 1;
-                const h = parent.clientHeight || 1;
-                renderer.setSize(w, h, false);
-                camera.aspect = w / h;
-                camera.updateProjectionMatrix();
-            }
-            window.addEventListener('resize', resize);
-            resize();
+    let targetRotY = 0.55, currentRotY = 0.55;
+    let targetRotX = 0, currentRotX = 0;
+    let dragging = false, lastX = 0;
+    let rafId = null;
+    let running = false;
 
-            let targetRotY = 0.55, currentRotY = 0.55;
-            let targetRotX = 0, currentRotX = 0;
-            let dragging = false, lastX = 0;
+    function updateFromPointer(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const nx = ((clientX - rect.left) / rect.width) * 2 - 1;
+        const ny = ((clientY - rect.top) / rect.height) * 2 - 1;
+        targetRotX = ny * 0.22;
+        if (!dragging) targetRotY = 0.55 + nx * 0.35;
+    }
 
-            function updateFromPointer(clientX, clientY) {
-                const rect = canvas.getBoundingClientRect();
-                const nx = ((clientX - rect.left) / rect.width) * 2 - 1;
-                const ny = ((clientY - rect.top) / rect.height) * 2 - 1;
-                targetRotX = ny * 0.22;
-                if (!dragging) targetRotY = 0.55 + nx * 0.35;
-            }
+    function beginDrag(clientX) {
+        dragging = true;
+        lastX = clientX;
+    }
+    function moveDrag(clientX, clientY) {
+        updateFromPointer(clientX, clientY);
+        if (dragging) {
+            const dx = clientX - lastX;
+            targetRotY += dx * 0.008;
+            lastX = clientX;
+        }
+    }
+    function endDrag() { dragging = false; }
 
-            function beginDrag(clientX) {
-                dragging = true;
-                lastX = clientX;
-            }
-            function moveDrag(clientX, clientY) {
-                updateFromPointer(clientX, clientY);
-                if (dragging) {
-                    const dx = clientX - lastX;
-                    targetRotY += dx * 0.008;
-                    lastX = clientX;
-                }
-            }
-            function endDrag() { dragging = false; }
+    canvas.addEventListener('pointerdown', (e) => {
+        e.preventDefault();
+        beginDrag(e.clientX);
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    }, { passive: false });
+    canvas.addEventListener('pointermove', (e) => {
+        if (dragging) e.preventDefault();
+        moveDrag(e.clientX, e.clientY);
+    }, { passive: false });
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
+    canvas.addEventListener('pointerleave', () => { if (!dragging) targetRotX = 0; });
 
-            // Pointer Events (covers mouse, touch and pen on modern browsers)
-            canvas.addEventListener('pointerdown', (e) => {
-                e.preventDefault();
-                beginDrag(e.clientX);
-                try { canvas.setPointerCapture(e.pointerId); } catch (_) { /* not critical */ }
-            }, { passive: false });
-            canvas.addEventListener('pointermove', (e) => {
-                if (dragging) e.preventDefault();
-                moveDrag(e.clientX, e.clientY);
-            }, { passive: false });
-            window.addEventListener('pointerup', endDrag);
-            window.addEventListener('pointercancel', endDrag);
-            canvas.addEventListener('pointerleave', () => { if (!dragging) targetRotX = 0; });
+    if (!window.PointerEvent) {
+        canvas.addEventListener('touchstart', (e) => {
+            if (!e.touches || !e.touches.length) return;
+            e.preventDefault();
+            beginDrag(e.touches[0].clientX);
+        }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => {
+            if (!e.touches || !e.touches.length) return;
+            e.preventDefault();
+            moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }, { passive: false });
+        canvas.addEventListener('touchend', endDrag, { passive: true });
+        canvas.addEventListener('touchcancel', endDrag, { passive: true });
+    }
 
-            // Plain touch-event fallback for the rare mobile browser that
-            // doesn't implement Pointer Events at all. Guarded so it never
-            // double-fires alongside the pointer listeners above.
-            if (!window.PointerEvent) {
-                canvas.addEventListener('touchstart', (e) => {
-                    if (!e.touches || !e.touches.length) return;
-                    e.preventDefault();
-                    beginDrag(e.touches[0].clientX);
-                }, { passive: false });
-                canvas.addEventListener('touchmove', (e) => {
-                    if (!e.touches || !e.touches.length) return;
-                    e.preventDefault();
-                    moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-                }, { passive: false });
-                canvas.addEventListener('touchend', endDrag, { passive: true });
-                canvas.addEventListener('touchcancel', endDrag, { passive: true });
-            }
+    let t = 0;
+    function animate() {
+        if (!running) return;
+        t += 0.016;
+        if (!dragging) targetRotY += 0.0022;
+        currentRotY += (targetRotY - currentRotY) * 0.06;
+        currentRotX += (targetRotX - currentRotX) * 0.06;
+        group.rotation.y = currentRotY;
+        group.rotation.x = currentRotX * 0.3;
+        meshes.forEach((mesh) => {
+            mesh.position.y = mesh.userData.baseY + Math.sin(t + mesh.userData.floatOffset) * 0.09;
+        });
+        renderer.render(scene, camera);
+        rafId = requestAnimationFrame(animate);
+    }
 
-            let t = 0;
-            function animate() {
-                t += 0.016;
-                if (!dragging) targetRotY += 0.0022;
-                currentRotY += (targetRotY - currentRotY) * 0.06;
-                currentRotX += (targetRotX - currentRotX) * 0.06;
-                group.rotation.y = currentRotY;
-                group.rotation.x = currentRotX * 0.3;
-                meshes.forEach((mesh) => {
-                    mesh.position.y = mesh.userData.baseY + Math.sin(t + mesh.userData.floatOffset) * 0.09;
-                });
-                renderer.render(scene, camera);
-                if (!reduceMotion) requestAnimationFrame(animate);
-            }
-            animate();
-        })();
+    function start() {
+        if (reduceMotion || running) return;
+        running = true;
+        animate();
+    }
+
+    function stop() {
+        running = false;
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
+    // Start when visible, stop when tab is hidden
+    start();
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop();
+        else start();
+    });
+}
+
+// ===== LAZY LOAD THREE.JS =====
+(function () {
+    const heroStage = document.querySelector('.hero-3d-stage');
+    if (!heroStage) return;
+
+    let loaded = false;
+
+    function loadThree() {
+        if (loaded) return;
+        loaded = true;
+
+        const s = document.createElement('script');
+        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+        s.onload = () => initHero3D();
+        document.body.appendChild(s);
+    }
+
+    // Load when hero is near the viewport
+    const io = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadThree();
+            io.disconnect();
+        }
+    }, { rootMargin: '300px' });
+
+    io.observe(heroStage);
+
+    // Also load on first interaction with the stage (extra safety)
+    heroStage.addEventListener('pointerdown', loadThree, { once: true });
+})();
 
         console.log('%cDayBloc 🟣🟡🔴', 'font-size:40px;font-weight:900;background:linear-gradient(135deg,#6C5CE7,#9C8CFF);-webkit-background-clip:text;color:transparent;');
         console.log('%c⏱  Block your day. Own your life.', 'font-size:14px;color:#9C8CFF;');

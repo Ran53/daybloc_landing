@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DayBloc is a simple time blocking app. Plan your day on a visual timeline, drag blocks, build routines, track streaks, and stay focused without an account.">
+    <meta name="keywords" content="time blocking app, visual time blocking, daily time blocking, offline time blocking app, visual day planner, productivity app, focus planner, day planner">
+    <meta name="theme-color" content="#07070A">
+    <link rel="canonical" href="https://daybloc.app/">
+    <meta name="robots" content="index,follow">
+    <meta property="og:title" content="DayBloc — Simple Time Blocking App">
+    <meta property="og:description"
+        content="Plan your day on a visual timeline. Drag time blocks, build routines, track streaks, and stay focused without an account.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="DayBloc — Simple Time Blocking App">
+    <meta name="twitter:description" content="A visual time blocking app. Plan your day block by block, without an account.">
+    <meta property="og:type" content="website">
+    <title>Time Blocking App | DayBloc</title>
+
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
+    <link rel="manifest" href="site.webmanifest" />
+
+    <link rel="preconnect" href="https://api.fontshare.com">
+    <link rel="stylesheet"
+        href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=general-sans@400,500,600&display=swap">
+
+    <script>
+        // Render the Pro purchase-help page when Flutter opens:
+        // https://daybloc.app/?pro=1
+        (function () {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('pro') === '1') {
+                    document.documentElement.classList.add('promo-mode');
+                }
+            } catch (_) { }
+        })();
+    </script>
+    <link rel="stylesheet" href="assets/css/main.css">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "DayBloc",
+      "applicationCategory": "ProductivityApplication",
+      "description": "A simple time blocking app with a visual daily timeline, draggable time blocks, routines, streaks and offline planning.",
+      "url": "https://daybloc.app/",
+      "downloadUrl": "https://play.google.com/store/apps/details?id=com.daybloc.app",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+</head>
+
+<body>
+
+    <div class="grid-overlay" aria-hidden="true"></div>
+    <canvas id="bgFX" aria-hidden="true"></canvas>
+
+    <!-- PRO PURCHASE ISSUE PAGE
+         Flutter opens this with: https://daybloc.app/?pro=1
+         Kept functionally identical to the previous build — same ids, same copy, same redeem logic. -->
+    <main id="pro-issue-page" aria-labelledby="proIssueTitle">
+        <div class="pro-issue-glow"></div>
+
+        <section class="pro-issue-card">
+            <div class="pro-issue-eyebrow">
+                <span class="pro-issue-eyebrow-dot"></span>
+                Google Play purchase issue
+            </div>
+
+            <h1 id="proIssueTitle">
+                We hit a small bump with <span style="color:var(--violet-light)">Google Play.</span>
+            </h1>
+
+            <p class="lead">
+                Google Play is currently preventing some Pro purchases from going through.
+                We've found the issue and we're working to get it resolved.
+            </p>
+
+            <div class="gift">
+                <div class="gift-title">Rather than make you wait, here's 15 days of Monthly Pro on us. ❤️</div>
+
+                <div class="promo-code">
+                    <span id="promoCode">DAYBLOC15</span>
+                    <button class="copy-code" id="copyPromoCode" type="button">Copy</button>
+                </div>
+            </div>
+
+            <div class="pro-issue-steps">
+                <strong>How to redeem your 15 days of Monthly Pro:</strong>
+                <ol>
+                    <li>Copy the code above.</li>
+                    <li>Open DayBloc and go to <strong>Settings → Unlock PRO</strong>.</li>
+                    <li>Select the <strong>Monthly</strong> plan.</li>
+                    <li>Tap your <strong>current payment method</strong>.</li>
+                    <li>Scroll down and select <strong>Redeem code</strong>.</li>
+                    <li>Enter the code above and follow the Google Play prompts.</li>
+                </ol>
+            </div>
+
+            <p class="pro-issue-note">
+                <strong>This offer is valid for the Monthly PRO plan only.</strong><br>
+                <strong>No payment is required for the 15-day trial.</strong><br>
+                After the trial, the subscription follows the terms shown by Google Play
+                when you redeem it. You can cancel anytime through Google Play.
+                The 15-day offer is provided while we work through the Google Play issue.
+            </p>
+
+            <a class="pro-issue-back" href="/">← Back to DayBloc</a>
+        </section>
+    </main>
+
+						 
+																				 
+																																																																																																													 
+		  
+
+    <!-- HEADER -->
+    <header id="header">
+        <nav>
+            <a href="#" class="logo">
+                <div class="logo-blocks">
+                    <div class="logo-block"></div>
+                    <div class="logo-block"></div>
+                    <div class="logo-block"></div>
+                </div>
+                DayBloc
+            </a>
+            <ul>
+                <li class="nav-links"><a href="#features">Features</a></li>
+                <li class="nav-links"><a href="#how">How it works</a></li>
+                <li class="nav-links"><span class="nav-clock" id="navClock">--:--:--</span></li>
+                <li><a href="#download" class="nav-cta">Download</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="wrap hero-inner">
+            <div class="hero-copy">
+                <h1>Your day,<br>shaped like blocks.</h1>
+                <p>A simple time blocking app. Plan your day on a visual timeline — drag blocks, color your time, build routines, and see what your day actually looks like.</p>
+                <div class="hero-ctas">
+                    <a href="#download" class="btn btn-primary">Download DayBloc</a>
+                    <a href="#how" class="btn btn-secondary">See how it works</a>
+                </div>
+                <div class="hero-trust">Free to start · No account required.</div>
+                <div class="product-hunt-badge" style="margin-top: 1.5rem;">
+                    <a href="https://www.producthunt.com/products/daybloc?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-daybloc" target="_blank" rel="noopener noreferrer">
+                        <img alt="DayBloc - Plan your day in coloured blocks, not endless lists. | Product Hunt" width="250" height="54" src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1271760&amp;theme=light&amp;t=1792908434275">
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-3d-stage glow-border">
+                <div class="hero-3d-fallback"></div>
+                <div class="hero-hud">
+                    <span>07 BLOCKS</span>
+                    <span class="hud-pulse">LIVE</span>
+                </div>
+                <canvas id="heroCanvas"
+                    aria-label="An interactive cluster of colored time blocks you can drag to rotate"></canvas>
+                <div class="hero-3d-hint">Drag to spin</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIMELINE DEMO -->
+    <section class="demo reveal-section" id="demo">
+        <div class="wrap demo-inner">
+            <div class="demo-copy">
+                <h2>Visual time blocking that looks like your day.</h2>
+                <p>Every block is a piece of your schedule — sized, colored, and placed the way
+                    you actually think about your time. Drag one and the rest make room.</p>
+                <div class="demo-facts">
+                    <div class="demo-fact">
+                        <span class="demo-fact-dot" style="background:var(--coral)"></span>
+                        Drag any block to a new time, instantly
+                    </div>
+                    <div class="demo-fact">
+                        <span class="demo-fact-dot" style="background:var(--violet-light)"></span>
+                        Color by project, energy, or mood
+                    </div>
+                    <div class="demo-fact">
+                        <span class="demo-fact-dot" style="background:var(--mint)"></span>
+                        Save routines and drop them into any day
+                    </div>
+                    <div class="demo-fact">
+                        <span class="demo-fact-dot" style="background:var(--amber)"></span>
+                        A heatmap shows your patterns over months
+                    </div>
+                </div>
+            </div>
+
+            <div class="phone-stage" id="phoneStage">
+                <div class="phone-float">
+                    <div class="phone-frame" id="phoneFrame">
+                        <div class="phone-notch"></div>
+                        <div class="phone-screen">
+                            <div class="phone-ui" id="phoneUI">
+                                <div class="phone-header">
+                                    <div>
+                                        <div class="phone-date">Today</div>
+                                        <div class="phone-date-sub" id="phoneDate">Mon, Mar 8</div>
+                                    </div>
+                                    <div class="phone-add-btn">+</div>
+                                </div>
+                                <!-- rows injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BENTO FEATURES — every card is a live, working mini-demo -->
+    <section class="features reveal-section" id="features">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Time blocking features built around your day</h2>
+                <p>Try each one — every card below is live, not a screenshot.</p>
+            </div>
+
+            <div class="bento">
+                <div class="bento-item bento-large glow-border" id="widgetDrag">
+                    <div class="bento-widget">
+                        <div class="drag-track" id="dragTrack">
+                            <div class="drag-block" data-color="coral" style="top:6px;height:32px;background:var(--coral)">
+                                <span>Focus Work</span>
+                                <div class="resize-handle" aria-hidden="true"></div>
+                            </div>
+                            <div class="drag-block" data-color="violet" style="top:50px;height:32px;background:var(--violet)">
+                                <span>Team Sync</span>
+                                <div class="resize-handle" aria-hidden="true"></div>
+                            </div>
+                            <div class="drag-block" data-color="mint" style="top:94px;height:32px;background:var(--mint)">
+                                <span>Break</span>
+                                <div class="resize-handle" aria-hidden="true"></div>
+                            </div>
+                        </div>
+                        <div class="widget-hint">Drag a block to move it, pull the bottom edge to resize</div>
+                    </div>
+                    <div>
+                        <h3>Drag to rearrange, resize to extend</h3>
+                        <p>Move a block anywhere on the timeline. Pull its edge to make it longer
+                            or shorter — the rest of your day adjusts on its own.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item bento-tall glow-border" id="widgetHeatmap">
+                    <div class="bento-widget">
+                        <div class="heatmap-grid" id="heatmapGrid"></div>
+                        <div class="widget-hint">Tap a day to fill it in</div>
+                    </div>
+                    <div>
+                        <h3>See your patterns</h3>
+                        <p>A heatmap calendar shows which days you actually stuck to your plan,
+                            going back months.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item glow-border" id="widgetStreak">
+                    <div class="bento-widget">
+                        <div class="streak-days" id="streakDays"></div>
+                        <div class="streak-count"><span id="streakFlame">🔥</span> <span id="streakNum">0</span>-day
+                            streak</div>
+                    </div>
+                    <div>
+                        <h3>Keep a streak</h3>
+                        <p>Plan every day in a row and DayBloc keeps count. Missing a day breaks
+                            it — that's the point.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item glow-border" id="widgetRoutine">
+                    <div class="bento-widget">
+                        <div class="routine-demo">
+                            <div class="routine-chip" id="routineChip">🌅 Morning Routine</div>
+                            <div class="routine-drop" id="routineDrop">Drop on a day</div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Reuse a routine</h3>
+                        <p>Save a morning routine or a deep-work block once. Drop it into any day
+                            from then on.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item bento-wide glow-border" id="widgetOffline">
+                    <div class="bento-widget offline-widget">
+                        <button class="offline-toggle" id="offlineToggle" type="button" aria-pressed="false">
+                            <span class="offline-toggle-dot"></span>
+                            <span id="offlineToggleLabel">Wi-Fi on</span>
+                        </button>
+                        <div class="offline-status">✓ Your plan is saved on this device</div>
+                    </div>
+                    <div>
+                        <h3>No account needed</h3>
+                        <p>Your plan stays on your device. There's no account to create and no sign-in required.</p>
+                    </div>
+                </div>
+
+                <div class="bento-item glow-border" id="widgetCompare">
+                    <div class="bento-widget">
+                        <div class="compare-demo" id="compareDemo">
+                            <div class="compare-bars compare-planned">
+                                <div class="bar" style="height:40%;background:var(--line-strong)"></div>
+                                <div class="bar" style="height:70%;background:var(--line-strong)"></div>
+                                <div class="bar" style="height:55%;background:var(--line-strong)"></div>
+                                <div class="bar" style="height:85%;background:var(--line-strong)"></div>
+                                <div class="bar" style="height:30%;background:var(--line-strong)"></div>
+                            </div>
+                            <div class="compare-bars compare-actual" id="compareActual">
+                                <div class="bar" style="height:55%;background:var(--rose)"></div>
+                                <div class="bar" style="height:45%;background:var(--rose)"></div>
+                                <div class="bar" style="height:60%;background:var(--rose)"></div>
+                                <div class="bar" style="height:65%;background:var(--rose)"></div>
+                                <div class="bar" style="height:50%;background:var(--rose)"></div>
+                            </div>
+                            <div class="compare-handle" id="compareHandle"></div>
+                        </div>
+                        <div class="widget-hint">Drag to compare planned vs. actual</div>
+                    </div>
+                    <div>
+                        <h3>Planned vs. actual</h3>
+                        <p>At day's end, see how your real hours compared to the plan.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS — drag the marker to preview each step -->
+    <section class="how reveal-section" id="how">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Start time blocking in 60 seconds</h2>
+                <p>Drag the marker below to preview each step.</p>
+            </div>
+
+            <div class="scrubber">
+                <div class="scrubber-track" id="scrubberTrack">
+                    <div class="scrubber-fill" id="scrubberFill"></div>
+                    <button class="scrubber-stop active" data-index="0" style="left:0%" aria-label="Step 1"></button>
+                    <button class="scrubber-stop" data-index="1" style="left:50%" aria-label="Step 2"></button>
+                    <button class="scrubber-stop" data-index="2" style="left:100%" aria-label="Step 3"></button>
+                    <div class="scrubber-handle" id="scrubberHandle" style="left:0%"></div>
+                </div>
+            </div>
+
+            <div class="scrubber-panel">
+                <span class="step-number" id="scrubberNum">1</span>
+                <h3 id="scrubberTitle">Open the app</h3>
+                <p id="scrubberBody">No sign-up, no account. Add your first block in seconds —
+                    name it, color it, place it on the timeline.</p>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- SEO CONTENT -->
+    <section class="seo-strip reveal-section" aria-labelledby="seoTitle">
+        <div class="wrap seo-strip-inner">
+            <div>
+                <span class="seo-kicker">TIME BLOCKING</span>
+                <h2 id="seoTitle">A simple time blocking app for a day you can actually see.</h2>
+                <p>DayBloc turns your schedule into a visual timeline of time blocks. Move blocks when plans change, color your time, save routines, build a daily streak, and review how closely your planned day matched the real one.</p>
+            </div>
+            <div class="seo-links">
+                <a href="time-blocking-app/">Time blocking app</a>
+                <a href="offline-time-blocking/">Offline time blocking</a>
+                <a href="adhd-planner/">Planner for ADHD</a>
+                <a href="time-blocking-for-students/">Time blocking for students</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA / DOWNLOAD -->
+    <section class="cta-section reveal-section" id="download">
+        <div class="wrap">
+            <h2>Ready to plan your day in blocks?</h2>
+            <p>Free to start. No account required.</p>
+            <div class="download-buttons">
+                <a href="https://play.google.com/store/apps/details?id=com.daybloc.app&referrer=utm_source%3Dweb%26utm_medium%3Dlanding%26utm_campaign%3Dweb"
+                    class="app-store-btn" target="_blank" rel="noopener">
+                    <span class="store-icon">📱</span>
+                    <div>
+                        <small>GET IT ON</small>
+                        <strong>Google Play</strong>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="wrap">
+            <div class="footer-logo">
+                <div class="logo-blocks">
+                    <div class="logo-block"></div>
+                    <div class="logo-block"></div>
+                    <div class="logo-block"></div>
+                </div>
+                <span class="footer-logo-text">DayBloc</span>
+            </div>
+            <p>Own your day, block by block.</p>
+            <div class="footer-links">
+                <a href="time-blocking-app/">Time Blocking App</a>
+                <a href="offline-time-blocking/">Offline Planner</a>
+                <a href="adhd-planner/">ADHD Planner</a>
+                <a href="time-blocking-for-students/">Students</a>
+                <a href="vs/structured/">DayBloc vs Structured</a>
+                <a href="vs/tiimo/">DayBloc vs Tiimo</a>
+                <a href="changelog/">Changelog</a>
+                <a href="mailto:dayblocapp@gmail.com">Contact</a>
+                <a href="privacy_policy.txt" target="_blank">Privacy Policy</a>
+            </div>
+            <p style="margin-top:2rem;font-size:0.8rem;opacity:0.4;">Made with 💜</p>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="assets/js/main.js" defer></script>
+</body>
+
+</html>
